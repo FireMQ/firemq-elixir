@@ -1,0 +1,9 @@
+# Build artifacts and dependencies
+/_build/
+/deps/
+/doc/
+/cover/
+erl_crash.dump
+*.ez
+firemq-*.tar
+/tmp/
