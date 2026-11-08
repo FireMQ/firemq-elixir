@@ -1,0 +1,75 @@
+name: Publish
+
+# Publishes the firemq package and its docs to Hex when a version tag such as v0.1.0 is
+# pushed. To publish a tag that already exists, run the workflow by hand and pass the
+# tag. Skipped until the HEX_API_KEY secret is available to this repository.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish, for example v0.1.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  OTP_VERSION: "27"
+  ELIXIR_VERSION: "1.17"
+
+jobs:
+  token:
+    name: Check for HEX_API_KEY
+    runs-on: ubuntu-latest
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - id: check
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+        run: |
+          if [ -n "$HEX_API_KEY" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::HEX_API_KEY is not set; skipping the Hex publish"
+          fi
+
+  publish:
+    name: mix hex.publish
+    needs: token
+    if: needs.token.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    env:
+      # The pushed tag, or the tag passed to a manual run.
+      TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.TAG }}
+
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+
+      - name: Check that the tag matches @version in mix.exs
+        run: |
+          version="$(sed -n 's/^ *@version "\(.*\)"$/\1/p' mix.exs)"
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::Tag $TAG does not match @version \"$version\" in mix.exs"
+            exit 1
+          fi
+
+      - run: mix deps.get
+      - run: mix test
+
+      # Builds the package and the docs (ex_doc) and publishes both.
+      - name: Publish to Hex
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+        run: mix hex.publish --yes
