@@ -1,0 +1,383 @@
+{
+  "description": "FireMQ protocol v1 frames. Each frame_hex is a length-prefixed frame as sent on TCP. Decoders must produce the listed header and payload.",
+  "vectors": [
+    {
+      "frame_hex": "00000082010000007d86a376657201a576686f7374a12fa46175746883a46d656368a5706c61696ea475736572a56775657374a470617373a56775657374a96865617274626561741ea6636c69656e7482a46e616d65ab666972656d712d72757374a776657273696f6ea5302e312e30a46361707392a8636f6e6669726d73a6637265646974",
+      "header": {
+        "auth": {
+          "mech": "plain",
+          "pass": "guest",
+          "user": "guest"
+        },
+        "caps": [
+          "confirms",
+          "credit"
+        ],
+        "client": {
+          "name": "firemq-rust",
+          "version": "0.1.0"
+        },
+        "heartbeat": 30,
+        "ver": 1,
+        "vhost": "/"
+      },
+      "name": "hello",
+      "op": 1,
+      "op_name": "hello",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000092020000008d86a376657201a673657276657282a46e616d65a6666972656d71a776657273696f6ea5302e312e30a7636f6e6e5f6964d9213132372e302e302e313a3530303030202d3e203132372e302e302e313a35363733a96865617274626561741ea96d61785f6672616d65ce01000000a46361707393a8636f6e6669726d73a6637265646974a96d616e6461746f7279",
+      "header": {
+        "caps": [
+          "confirms",
+          "credit",
+          "mandatory"
+        ],
+        "conn_id": "127.0.0.1:50000 -> 127.0.0.1:5673",
+        "heartbeat": 30,
+        "max_frame": 16777216,
+        "server": {
+          "name": "firemq",
+          "version": "0.1.0"
+        },
+        "ver": 1
+      },
+      "name": "welcome",
+      "op": 2,
+      "op_name": "welcome",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "000000050300000000",
+      "header": {},
+      "name": "ping",
+      "op": 3,
+      "op_name": "ping",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "000000050400000000",
+      "header": {},
+      "name": "pong",
+      "op": 4,
+      "op_name": "pong",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000015050000001082a4636f6465ccc8a36d7367a3627965",
+      "header": {
+        "code": 200,
+        "msg": "bye"
+      },
+      "name": "close",
+      "op": 5,
+      "op_name": "close",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "0000002a060000002584a372696402a46e616d65a46a6f6273a86d6573736167657300a9636f6e73756d65727300",
+      "header": {
+        "consumers": 0,
+        "messages": 0,
+        "name": "jobs",
+        "rid": 2
+      },
+      "name": "ok",
+      "op": 6,
+      "op_name": "ok",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000037070000003283a372696403a4636f6465cd0194a36d7367bf6e6f20717565756520276d697373696e672720696e2076686f737420272f27",
+      "header": {
+        "code": 404,
+        "msg": "no queue 'missing' in vhost '/'",
+        "rid": 3
+      },
+      "name": "error",
+      "op": 7,
+      "op_name": "error",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "0000000d080000000881a57061757365c3",
+      "header": {
+        "pause": true
+      },
+      "name": "flow",
+      "op": 8,
+      "op_name": "flow",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "0000002b100000002684a372696401a46e616d65a66f7264657273a474797065a5746f706963a764757261626c65c3",
+      "header": {
+        "durable": true,
+        "name": "orders",
+        "rid": 1,
+        "type": "topic"
+      },
+      "name": "declare_exchange",
+      "op": 16,
+      "op_name": "declare_exchange",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000022110000001d83a372696401a46e616d65a66f7264657273a969665f756e75736564c3",
+      "header": {
+        "if_unused": true,
+        "name": "orders",
+        "rid": 1
+      },
+      "name": "delete_exchange",
+      "op": 17,
+      "op_name": "delete_exchange",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000050120000004b84a372696402a46e616d65a46a6f6273a764757261626c65c3a46172677382b6782d646561642d6c65747465722d65786368616e6765a3646c78ad782d6d6573736167652d74746ccdea60",
+      "header": {
+        "args": {
+          "x-dead-letter-exchange": "dlx",
+          "x-message-ttl": 60000
+        },
+        "durable": true,
+        "name": "jobs",
+        "rid": 2
+      },
+      "name": "declare_queue",
+      "op": 18,
+      "op_name": "declare_queue",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "0000001f130000001a83a372696402a46e616d65a46a6f6273a869665f656d707479c3",
+      "header": {
+        "if_empty": true,
+        "name": "jobs",
+        "rid": 2
+      },
+      "name": "delete_queue",
+      "op": 19,
+      "op_name": "delete_queue",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000015140000001082a372696402a46e616d65a46a6f6273",
+      "header": {
+        "name": "jobs",
+        "rid": 2
+      },
+      "name": "purge_queue",
+      "op": 20,
+      "op_name": "purge_queue",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000032150000002d84a372696404a865786368616e6765a66f7264657273a57175657565a46a6f6273a36b6579a76f726465722e2a",
+      "header": {
+        "exchange": "orders",
+        "key": "order.*",
+        "queue": "jobs",
+        "rid": 4
+      },
+      "name": "bind",
+      "op": 21,
+      "op_name": "bind",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000033160000002e84a372696405a865786368616e6765a66f7264657273ab746f5f65786368616e6765a56175646974a36b6579a123",
+      "header": {
+        "exchange": "orders",
+        "key": "#",
+        "rid": 5,
+        "to_exchange": "audit"
+      },
+      "name": "unbind",
+      "op": 22,
+      "op_name": "unbind",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "000000d920000000cb87a373657101a865786368616e6765a66f7264657273a36b6579ad6f726465722e63726561746564a96d616e6461746f7279c3aa70657273697374656e74c3a570726f707385ac636f6e74656e745f74797065b06170706c69636174696f6e2f6a736f6eae636f7272656c6174696f6e5f6964a57265712d31a87265706c795f746fad616d712e67656e2d7265706c79aa65787069726174696f6ecd7530a974696d657374616d70ce6955b900a76865616465727382a57472616365a3616263a9782d617474656d7074027b226964223a34327d",
+      "header": {
+        "exchange": "orders",
+        "headers": {
+          "trace": "abc",
+          "x-attempt": 2
+        },
+        "key": "order.created",
+        "mandatory": true,
+        "persistent": true,
+        "props": {
+          "content_type": "application/json",
+          "correlation_id": "req-1",
+          "expiration": 30000,
+          "reply_to": "amq.gen-reply",
+          "timestamp": 1767225600
+        },
+        "seq": 1
+      },
+      "name": "publish",
+      "op": 32,
+      "op_name": "publish",
+      "payload_hex": "7b226964223a34327d"
+    },
+    {
+      "frame_hex": "0000000c210000000781a47570746f01",
+      "header": {
+        "upto": 1
+      },
+      "name": "confirm",
+      "op": 33,
+      "op_name": "confirm",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000032210000002d84a373657102a46e61636bc3a4636f6465cd0196a36d7367b4717565756520276a6f6273272069732066756c6c",
+      "header": {
+        "code": 406,
+        "msg": "queue 'jobs' is full",
+        "nack": true,
+        "seq": 2
+      },
+      "name": "confirm_nack",
+      "op": 33,
+      "op_name": "confirm",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000044220000003d85a373657103a4636f6465cd0138a36d7367a84e4f5f524f555445a865786368616e6765a66f7264657273a36b6579ad6f726465722e756e6b6e6f776e6869",
+      "header": {
+        "code": 312,
+        "exchange": "orders",
+        "key": "order.unknown",
+        "msg": "NO_ROUTE",
+        "seq": 3
+      },
+      "name": "return",
+      "op": 34,
+      "op_name": "return",
+      "payload_hex": "6869"
+    },
+    {
+      "frame_hex": "00000023300000001e84a372696406a373756201a57175657565a46a6f6273a663726564697464",
+      "header": {
+        "credit": 100,
+        "queue": "jobs",
+        "rid": 6,
+        "sub": 1
+      },
+      "name": "subscribe",
+      "op": 48,
+      "op_name": "subscribe",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000010310000000b82a372696407a373756201",
+      "header": {
+        "rid": 7,
+        "sub": 1
+      },
+      "name": "unsubscribe",
+      "op": 49,
+      "op_name": "unsubscribe",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000013320000000e82a373756201a663726564697432",
+      "header": {
+        "credit": 50,
+        "sub": 1
+      },
+      "name": "credit",
+      "op": 50,
+      "op_name": "credit",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "000000c733000000b986a373756201a374616701a865786368616e6765a66f7264657273a36b6579ad6f726465722e63726561746564a570726f707385ac636f6e74656e745f74797065b06170706c69636174696f6e2f6a736f6eae636f7272656c6174696f6e5f6964a57265712d31a87265706c795f746fad616d712e67656e2d7265706c79aa65787069726174696f6ecd7530a974696d657374616d70ce6955b900a76865616465727382a57472616365a3616263a9782d617474656d7074027b226964223a34327d",
+      "header": {
+        "exchange": "orders",
+        "headers": {
+          "trace": "abc",
+          "x-attempt": 2
+        },
+        "key": "order.created",
+        "props": {
+          "content_type": "application/json",
+          "correlation_id": "req-1",
+          "expiration": 30000,
+          "reply_to": "amq.gen-reply",
+          "timestamp": 1767225600
+        },
+        "sub": 1,
+        "tag": 1
+      },
+      "name": "deliver",
+      "op": 51,
+      "op_name": "deliver",
+      "payload_hex": "7b226964223a34327d"
+    },
+    {
+      "frame_hex": "00000030340000002b83a373756201a4636f6465cd0194a36d7367b8717565756520276a6f627327207761732064656c65746564",
+      "header": {
+        "code": 404,
+        "msg": "queue 'jobs' was deleted",
+        "sub": 1
+      },
+      "name": "cancelled",
+      "op": 52,
+      "op_name": "cancelled",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000015350000001082a374616705a86d756c7469706c65c3",
+      "header": {
+        "multiple": true,
+        "tag": 5
+      },
+      "name": "ack",
+      "op": 53,
+      "op_name": "ack",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000014360000000f82a374616706a772657175657565c3",
+      "header": {
+        "requeue": true,
+        "tag": 6
+      },
+      "name": "nack",
+      "op": 54,
+      "op_name": "nack",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000016370000001182a372696408a57175657565a46a6f6273",
+      "header": {
+        "queue": "jobs",
+        "rid": 8
+      },
+      "name": "get",
+      "op": 55,
+      "op_name": "get",
+      "payload_hex": ""
+    },
+    {
+      "frame_hex": "00000028380000001f84a372696408a374616709a36b6579a46a6f6273a972656d61696e696e6703776f726b",
+      "header": {
+        "key": "jobs",
+        "remaining": 3,
+        "rid": 8,
+        "tag": 9
+      },
+      "name": "get_ok",
+      "op": 56,
+      "op_name": "get_ok",
+      "payload_hex": "776f726b"
+    }
+  ]
+}

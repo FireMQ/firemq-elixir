@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  OTP_VERSION: "27"
+  ELIXIR_VERSION: "1.17"
+
+jobs:
+  test:
+    name: Format and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: mix-test-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock') }}
+
+      - run: mix deps.get
+      - run: mix format --check-formatted
+      - run: mix compile --warnings-as-errors
+        env:
+          MIX_ENV: test
+      - run: mix test
+
+  broker:
+    name: Conformance, integration tests and examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The conformance suite lands in FireMQ/firemq with FireMQ/firemq#38. Until that PR
+      # merges, build the broker and the runner from its branch. Move the ref to `main`
+      # once it merges.
+      - uses: actions/checkout@v4
+        with:
+          repository: FireMQ/firemq
+          ref: b90a2ff9bda15a398c6957bfb291e4a9db9957ab
+          path: firemq
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: firemq
+
+      - name: Build the broker and the conformance runner
+        working-directory: firemq
+        run: cargo build -p firemq -p firemq-conformance
+
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: mix-broker-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock') }}
+
+      - run: mix deps.get
+
+      # Compile first, so `mix run` prints nothing on the driver's stdout.
+      - run: mix compile && MIX_ENV=test mix compile
+
+      - name: Conformance suite
+        run: firemq/target/debug/firemq-conformance run --driver "mix run conformance/driver.exs"
+
+      - name: Start the broker
+        run: |
+          firemq/target/debug/firemq --ephemeral > broker.log 2>&1 &
+          for _ in $(seq 1 50); do
+            (echo > /dev/tcp/127.0.0.1/5673) 2>/dev/null && exit 0
+            sleep 0.2
+          done
+          cat broker.log
+          exit 1
+
+      - name: Integration tests
+        run: mix test --only integration
+        env:
+          FIREMQ_URL: fire://guest:guest@localhost:5673
+
+      - name: Examples
+        run: |
+          for example in examples/*.exs; do
+            echo "== $example"
+            mix run "$example"
+          done
+        env:
+          FIREMQ_URL: fire://guest:guest@localhost:5673
+
+      - name: Broker log
+        if: failure()
+        run: cat broker.log || true
