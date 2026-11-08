@@ -43,6 +43,6 @@ defmodule FireMQ.MixProject do
   end
 
   defp docs do
-    [main: "readme", extras: ["README.md"], source_ref: "v#{@version}"]
+    [main: "readme", extras: ["README.md", "LICENSE"], source_ref: "v#{@version}"]
   end
 end
