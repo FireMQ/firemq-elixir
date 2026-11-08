@@ -47,7 +47,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: FireMQ/firemq
-          ref: b90a2ff9bda15a398c6957bfb291e4a9db9957ab
+          # The FireMQ release this SDK is tested against. Move it with each release.
+          ref: v0.1.0
           path: firemq
 
       - uses: dtolnay/rust-toolchain@stable
